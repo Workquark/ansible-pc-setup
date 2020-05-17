@@ -1,0 +1,93 @@
+- name: Package Installation - Update Apt package cache
+  apt:
+    update_cache: false
+  changed_when: false
+
+- name: Package Installation - Productivity Tools
+  become_user: "{{ username }}"
+  package:
+    name: [
+        zsh 
+        , curl
+        , git 
+        , tilix
+        , gnome-tweak-tool
+        , qbittorrent 
+        , apt-transport-https
+    ]
+    state: present
+
+- name: Package Installation - Development Tools
+  become_user: "{{ username }}"
+  package:
+    name: [
+        'binutils',
+    ]
+    state: present
+
+- name: Package Installation - Media
+  become_user: "{{ username }}"
+  package:
+    name: [
+        'flameshot',
+        'imagemagick'
+    ]
+    state: present
+
+- name: Install oh-my-zsh
+  become_user: "{{ username }}"
+  shell: curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh; zsh
+
+- name: Install syntax highlighting plugin (zsh)
+  become_user: "{{ username }}"
+  git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: ${ZSH_CUSTOM:-{{ userhome }}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    clone: yes
+    update: yes
+
+- name: Install autosuggestions (zsh)
+  become_user: "{{ username }}"
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions 
+    dest: ${ZSH_CUSTOM:-{{ userhome }}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    clone: yes
+    update: yes
+
+- name: Download fzf . File search utility (zsh)
+  git:
+    repo: https://github.com/junegunn/fzf.git
+    depth: 1 
+    dest: "{{ userhome }}/.fzf"
+    clone: yes
+    update: yes
+
+- name: Install file search utility fzf(zsh)
+  # become_user: "{{ username }}"
+  shell: "{{ userhome }}/.fzf/install"
+
+- name: Install powerlevel9k (zsh)
+  # become_user: "{{ username }}"
+  git:
+    repo: https://github.com/bhilburn/powerlevel9k.git 
+    dest: "{{ userhome }}/.oh-my-zsh/custom/themes/powerlevel9k"
+    clone: yes
+    update: yes
+
+- name: Download google cloud cli
+  become_user: "{{ username }}"
+  get_url:
+    url: https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz
+    dest: "{{ userhome }}/SDKs/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz"
+    mode: '0755'
+
+- name: Install google cloud cli
+  # become_user: "{{ username }}"
+  shell: |
+    "tar {{ userhome }}/SDKs/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz {{ userhome }}/SDKs/google-cloud-sdk"
+    "{{ userhome }}/SDKs/google-cloud-sdk/install.sh"
+
+
+- name: Install Helm
+  become_user: "{{ username }}"
+  shell: curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
