@@ -4,7 +4,7 @@
   changed_when: false
 
 - name: Package Installation - Productivity Tools
-  become_user: "{{ username }}"
+  #become_user: "{{ username }}"
   package:
     name: [
         zsh 
@@ -18,7 +18,7 @@
     state: present
 
 - name: Package Installation - Development Tools
-  become_user: "{{ username }}"
+  #become_user: "{{ username }}"
   package:
     name: [
         'binutils',
@@ -26,7 +26,7 @@
     state: present
 
 - name: Package Installation - Media
-  become_user: "{{ username }}"
+  #become_user: "{{ username }}"
   package:
     name: [
         'flameshot',
@@ -78,15 +78,17 @@
   become_user: "{{ username }}"
   get_url:
     url: https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz
-    dest: "{{ userhome }}/SDKs/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz"
-    mode: '0755'
+    dest: "{{ userhome }}/SDKs/"
+    timeout: 500
+
+- name: Extract google-sdk tar into SDKs folder
+  unarchive:
+    src: "{{ userhome }}/SDKs/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz"
+    dest: "{{ userhome }}/SDKs/"
+    creates: "{{ userhome }}/SDKs/google-cloud-sdk" 
 
 - name: Install google cloud cli
-  # become_user: "{{ username }}"
-  shell: |
-    "tar {{ userhome }}/SDKs/google-cloud-sdk-291.0.0-linux-x86_64.tar.gz {{ userhome }}/SDKs/google-cloud-sdk"
-    "{{ userhome }}/SDKs/google-cloud-sdk/install.sh"
-
+  shell: "{{ userhome }}/SDKs/google-cloud-sdk/install.sh"
 
 - name: Install Helm
   become_user: "{{ username }}"
