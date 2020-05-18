@@ -8,6 +8,7 @@
   package:
     name: [
         zsh 
+        , tlp
         , curl
         , git 
         , tilix
